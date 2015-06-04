@@ -6,6 +6,8 @@
     <string name="title_section3">Section 3</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="search_hint">search podcasts</string>
+    <string name="search_title">PodBuddy</string>
 
     <string name="action_settings">Settings</string>
 </resources>

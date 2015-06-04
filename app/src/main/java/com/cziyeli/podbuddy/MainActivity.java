@@ -11,7 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.cziyeli.podbuddy.fragments.ImageFragment;
-import com.cziyeli.podbuddy.fragments.TruitionListFragment;
+import com.cziyeli.podbuddy.fragments.SecondFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_viewpager);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -84,22 +84,22 @@ public class MainActivity extends AppCompatActivity {
             // calls all the fragments which are to be displayed according to the position
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.d(CONSTANTS.DEBUG_TAG, "getItem at position: " + String.valueOf(position));
+            Log.d(Config.DEBUG_TAG, "getItem at position: " + String.valueOf(position));
 
             switch (position) {
                 case 0: // Fragment # 0 - This will show image
                     return ImageFragment.init(position);
                 case 1: // Fragment # 1 - This will show image
                     return ImageFragment.init(position);
-                default:// Fragment # 2
-                    return TruitionListFragment.init(position);
+                default:// List fragment
+                    return SecondFragment.newInstance(2, "Page # 3");
             }
         }
 
         @Override
         // How many fragments to show
         public int getCount() {
-            return CONSTANTS.FRAGS_COUNT;
+            return Config.FRAGS_COUNT;
         }
 
 //        @Override

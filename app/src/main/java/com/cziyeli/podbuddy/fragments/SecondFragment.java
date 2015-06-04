@@ -10,35 +10,38 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cziyeli.podbuddy.Config;
 import com.cziyeli.podbuddy.R;
 
 /**
  * Created by connieli on 6/2/15.
  */
-public class TruitionListFragment extends ListFragment {
+public class SecondFragment extends ListFragment {
+    // Store instance variables
+    private String title;
+    private int page;
     int fragNum;
     String arr[] = { "This is", "a Truiton", "Demo", "App", "For", "Showing",
             "FragmentPagerAdapter", "and ViewPager", "Implementation" };
 
-    public static TruitionListFragment init(int val) {
-        TruitionListFragment truitonList = new TruitionListFragment();
-
-        // Supply val input as an argument.
+    // newInstance constructor for creating fragment with arguments
+    public static FirstFragment newInstance(int page, String title) {
+        FirstFragment fragmentFirst = new FirstFragment();
         Bundle args = new Bundle();
-        args.putInt("val", val);
-        truitonList.setArguments(args);
-
-        return truitonList;
+        args.putInt("someInt", page);
+        args.putString("someTitle", title);
+        fragmentFirst.setArguments(args);
+        return fragmentFirst;
     }
 
-    /**
-     * Retrieving this instance's number from its arguments.
-     */
+    // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragNum = getArguments() != null ? getArguments().getInt("val") : 1;
+        page = getArguments().getInt("someInt", 0);
+        title = getArguments().getString("someTitle");
     }
+
 
     /**
      * The Fragment's UI is a simple text view showing its instance number and
@@ -63,6 +66,6 @@ public class TruitionListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.i("Truiton FragmentList", "Item clicked: " + id);
+        Log.d(Config.DEBUG_TAG, "Item clicked: " + id);
     }
 }
