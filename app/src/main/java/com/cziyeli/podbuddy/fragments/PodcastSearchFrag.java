@@ -14,12 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bdenney.itunessearch.PodcastInfo;
 import com.cziyeli.podbuddy.Config;
 import com.cziyeli.podbuddy.R;
 import com.cziyeli.podbuddy.adapters.PodcastSearchAdapter;
+import com.cziyeli.podbuddy.models.Podcast;
 import com.cziyeli.podbuddy.services.SearchPodcastsService;
 
 import java.util.ArrayList;
@@ -107,24 +107,28 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Object> loader, Object data) {
+        Log.d(Config.DEBUG_TAG, "+++ onLoadFinished() called! +++");
 
     }
 
     @Override
     public void onLoaderReset(Loader<Object> loader) {
+        Log.d(Config.DEBUG_TAG, "+++ onLoaderReset() called! +++");
 
     }
 
     public class SearchPodcastsReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mPodcastInfos = (ArrayList<PodcastInfo>) intent.getSerializableExtra("data");
-            if (mPodcastInfos != null && mPodcastInfos.size() > 0) {
-                Log.d(Config.DEBUG_TAG, "found mPodcastInfos");
-//                mAdapter.updateData(mPodcastInfos);
-            } else {
-                Toast.makeText(mActivity, "no podcasts were found", Toast.LENGTH_LONG).show();
-            }
+            int count = Podcast.count();
+            Log.d(Config.DEBUG_TAG, "onReceive in frag search items: " + String.valueOf(count));
+//            mPodcastInfos = (ArrayList<PodcastInfo>) intent.getSerializableExtra("data");
+//            if (mPodcastInfos != null && mPodcastInfos.size() > 0) {
+//                Log.d(Config.DEBUG_TAG, "found mPodcastInfos");
+////                mAdapter.updateData(mPodcastInfos);
+//            } else {
+//                Toast.makeText(mActivity, "no podcasts were found", Toast.LENGTH_LONG).show();
+//            }
         }
     }
 }

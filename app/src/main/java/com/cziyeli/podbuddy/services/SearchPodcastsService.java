@@ -10,7 +10,6 @@ import com.bdenney.itunessearch.PodcastInfo;
 import com.cziyeli.podbuddy.Config;
 import com.cziyeli.podbuddy.models.Podcast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,10 +27,15 @@ public class SearchPodcastsService extends IntentService {
     protected void onHandleIntent(Intent workIntent) {
         // Gets data from the incoming Intent
         String dataString = workIntent.getStringExtra(Config.QUERY_TAG);
+
         // Do work
         List<PodcastInfo> podcastInfoList = ITunesSearchClient.searchPodcasts(dataString);
         Log.d(Config.DEBUG_TAG, "workIntent onHandleIntent: " + dataString + " returned size: " + String.valueOf(podcastInfoList.size()));
 
+        // fresh search
+        Podcast.clearAll();
+
+        // Save new search results
         savePodcasts(podcastInfoList);
 //        ArrayList<PodcastInfo> podcastArray = processPodcastInfo(podcastInfoList);
 //        broadcastResults(podcastArray);
@@ -60,9 +64,11 @@ public class SearchPodcastsService extends IntentService {
 
             podcast.save();
         }
+
+        broadcastResults();
     }
 
-    protected void broadcastResults(ArrayList<PodcastInfo> podcastArray) {
+    protected void broadcastResults() {
         Intent intentResponse = new Intent();
         intentResponse.setAction(ACTION_RESPONSE);
         intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
