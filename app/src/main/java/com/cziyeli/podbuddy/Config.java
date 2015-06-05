@@ -8,6 +8,9 @@ public class Config {
     public static final int FRAGS_COUNT = 3;
 
     public static final String PACKAGE_BASE = "com.cziyeli.podbuddy";
-    public static final String QUERY_TAG = "QUERY";
-    public static final String PODCAST_DATA = "DATA";
+    public static final String SEARCH_IN = "search_in";
+    public static final String SEARCH_OUT = "search_out";
+
+    public static final String LISTEN_IN = "id";
+    public static final String LISTEN_OUT = "listen_out";
 }

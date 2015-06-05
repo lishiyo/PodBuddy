@@ -3,13 +3,17 @@ package com.cziyeli.podbuddy.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
 import com.bdenney.itunessearch.ITunesSearchClient;
 import com.bdenney.itunessearch.PodcastInfo;
 import com.cziyeli.podbuddy.Config;
 import com.cziyeli.podbuddy.models.Podcast;
+import com.cziyeli.podbuddy.models.PodcastFav;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,62 +21,64 @@ import java.util.List;
  */
 
 public class SearchPodcastsService extends IntentService {
-    public static final String ACTION_RESPONSE = Config.PACKAGE_BASE + ".RESPONSE";
+    public static final String ACTION_RESPONSE = Config.PACKAGE_BASE + ".SEARCH";
 
     public SearchPodcastsService() {
         super("SearchPodcastsService");
     }
 
     @Override
-    protected void onHandleIntent(Intent workIntent) {
+    protected void onHandleIntent(Intent intent) {
         // Gets data from the incoming Intent
-        String dataString = workIntent.getStringExtra(Config.QUERY_TAG);
+        String dataString = intent.getStringExtra(Config.SEARCH_IN);
 
-        // Do work
+        // Query API
         List<PodcastInfo> podcastInfoList = ITunesSearchClient.searchPodcasts(dataString);
-        Log.d(Config.DEBUG_TAG, "workIntent onHandleIntent: " + dataString + " returned size: " + String.valueOf(podcastInfoList.size()));
 
-        // fresh search
+        // Fresh search
         Podcast.clearAll();
 
-        // Save new search results
+        // Cache new search results to database
         savePodcasts(podcastInfoList);
-//        ArrayList<PodcastInfo> podcastArray = processPodcastInfo(podcastInfoList);
-//        broadcastResults(podcastArray);
     }
-//
-//    private ArrayList<PodcastInfo> processPodcastInfo(List<PodcastInfo> podcastInfoList) {
-//        ArrayList<PodcastInfo> test = new ArrayList<PodcastInfo>(Arrays.<PodcastInfo>asList(new List<PodcastInfo>[]{podcastInfoList}));
-//    }
 
-    // Process List<PodcastInfo> => Podcast models => save to database
     protected void savePodcasts(List<PodcastInfo> podcastInfoList) {
         PodcastInfo podcastInfo;
+        ArrayList<Long> currentFavs = PodcastFav.currentIds();
 
-        for (int i = 0; i < podcastInfoList.size(); i++) {
-            // podcast.toString() => Science Friday Audio Podcast - Science Friday
+        ActiveAndroid.beginTransaction();
+        try {
+            for (int i = 0; i < podcastInfoList.size(); i++) {
+                podcastInfo = podcastInfoList.get(i);
 
-            podcastInfo = podcastInfoList.get(i);
-            Log.d(Config.DEBUG_TAG, "savePodcasts: " + podcastInfo.getPodcastName() + " by: " + podcastInfo.getProducerName());
+                Podcast podcast = new Podcast();
+                podcast.podcast_id = podcastInfo.getPodcastId();
+                podcast.favorited = currentFavs.contains(podcast.podcast_id) ? 1 : 0;
+                podcast.producer_name = podcastInfo.getProducerName();
+                podcast.podcast_name = podcastInfo.getPodcastName();
+                podcast.artwork_url = podcastInfo.getArtworkUrl();
+                podcast.feed_url = podcastInfo.getFeedUrl();
+                podcast.podcast_id = podcastInfo.getPodcastId();
 
-            Podcast podcast = new Podcast();
-            podcast.producer_name = podcastInfo.getPodcastName();
-            podcast.podcast_name = podcastInfo.getPodcastName();
-            podcast.artwork_url = podcastInfo.getArtworkUrl();
-            podcast.feed_url = podcastInfo.getFeedUrl();
-            podcast.podcast_id = podcastInfo.getPodcastId();
+                Log.d(Config.DEBUG_TAG, "savePodcasts: " + podcastInfo.toString() + " favorited: " + String.valueOf(podcast.favorited));
 
-            podcast.save();
+                podcast.save();
+            }
+            ActiveAndroid.setTransactionSuccessful();
+        } catch(SQLiteException e) {
+            e.printStackTrace();
+            broadcastResults(false);
+        } finally {
+            ActiveAndroid.endTransaction();
+            broadcastResults(true);
         }
-
-        broadcastResults();
     }
 
-    protected void broadcastResults() {
+    protected void broadcastResults(boolean success) {
         Intent intentResponse = new Intent();
         intentResponse.setAction(ACTION_RESPONSE);
         intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
-//        intentResponse.putExtra(Config.PODCAST_DATA, podcastArray);
+        intentResponse.putExtra(Config.SEARCH_OUT, success);
         sendBroadcast(intentResponse);
     }
 }

@@ -5,10 +5,13 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.cziyeli.podbuddy.R;
+import com.cziyeli.podbuddy.models.Podcast;
+import com.cziyeli.podbuddy.models.PodcastFav;
 
 /**
  * Add ViewHolder caching
@@ -33,18 +36,39 @@ public class PodcastSearchAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.mCollectionName = (TextView) view.findViewById(R.id.collectionName);
+            holder.mPodcastName = (TextView) view.findViewById(R.id.podcastName);
             holder.mProducerName = (TextView) view.findViewById(R.id.producerName);
+            holder.mFavBtn = (Button) view.findViewById(R.id.favBtn);
+            holder.mFavBtn.setOnClickListener(mFavClickListener);
             view.setTag(holder);
         }
 
         // Extract properties from cursor
+        String podcastName = cursor.getString(cursor.getColumnIndexOrThrow("podcast_name"));
+        String producerName = cursor.getString(cursor.getColumnIndexOrThrow("producer_name"));
+        boolean isFavorited = cursor.getInt(cursor.getColumnIndexOrThrow("favorited")) == 1 ? true : false;
+        long _id = cursor.getLong(cursor.getColumnIndexOrThrow("_id")); // AA id
 
         // Populate fields with extracted properties
+        holder.mPodcastName.setText(podcastName);
+        holder.mProducerName.setText(producerName);
+        holder.mFavBtn.setTag(_id);
+        int btntext = isFavorited ? R.string.act_unfav : R.string.act_fav;
+        holder.mFavBtn.setText(btntext);
     }
 
+    public View.OnClickListener mFavClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            long p_id = (long) v.getTag();
+            Podcast podcast = Podcast.load(Podcast.class, p_id);
+            PodcastFav.createOrDestroyFav(podcast);
+        }
+    };
+
     public static class ViewHolder {
-        TextView mCollectionName;
+        TextView mPodcastName;
         TextView mProducerName;
+        Button mFavBtn;
     }
 }

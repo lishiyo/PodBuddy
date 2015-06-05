@@ -10,4 +10,8 @@
     <string name="search_title">PodBuddy</string>
 
     <string name="action_settings">Settings</string>
+
+    <string name="act_fav">Add to Favs</string>
+    <string name="act_unfav">Remove</string>
+    <string name="act_listen">Listen Latest</string>
 </resources>

@@ -5,45 +5,45 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.bdenney.itunessearch.PodcastInfo;
+import com.activeandroid.content.ContentProvider;
 import com.cziyeli.podbuddy.Config;
 import com.cziyeli.podbuddy.R;
 import com.cziyeli.podbuddy.adapters.PodcastSearchAdapter;
 import com.cziyeli.podbuddy.models.Podcast;
 import com.cziyeli.podbuddy.services.SearchPodcastsService;
 
-import java.util.ArrayList;
-
 /**
  * Created by connieli on 6/3/15.
+ * Attached FavBtn listeners in Adapter
  */
-public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderCallbacks<Object> {
-    // id is specific to the fragment's LoaderManager
+public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    // id is specific to the fragment's loader
     public static final int LOADER_ID = 1;
     public String mQuery = "";
-
     private TextView mSearchTitleView;
-    private Activity mActivity;
-    public SearchPodcastsReceiver mPodcastsReceiver;
-    public ArrayList<PodcastInfo> mPodcastInfos = null;
-
-    // Custom CursorAdapter to bind podcast results to podcast_search_list
-    public PodcastSearchAdapter mAdapter;
+    private ListView mListView;
+    private SearchPodcastsReceiver mPodcastsReceiver;
+    private PodcastSearchAdapter mAdapter;
 
     public static PodcastSearchFrag newInstance(String query) {
         PodcastSearchFrag f = new PodcastSearchFrag();
         Bundle args = new Bundle();
-        args.putString(Config.QUERY_TAG, query);
+        args.putString(Config.SEARCH_IN, query);
         f.setArguments(args);
 
         return f;
@@ -54,7 +54,8 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
-        mQuery = bundle.getString(Config.QUERY_TAG);
+        mQuery = bundle.getString(Config.SEARCH_IN);
+        mAdapter = new PodcastSearchAdapter(getActivity(), null);
     }
 
     // STEP 3
@@ -64,6 +65,10 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
 
         View v = inflater.inflate(R.layout.frag_podcast_search, container, false);
         mSearchTitleView = (TextView) v.findViewById(R.id.search_title);
+        mSearchTitleView.setText(mQuery);
+        mListView = (ListView) v.findViewById(R.id.podcast_search_list);
+        mListView.setAdapter(mAdapter);
+//        mListView.setOnItemClickListener(mFavListener);
 
         return v;
     }
@@ -71,10 +76,6 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
     // STEP 4
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
-        mActivity = getActivity();
-
-        // TEST
-        mSearchTitleView.setText("QUERY: " + mQuery);
 
         startSearchService();
 
@@ -83,52 +84,83 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
-    /** SEARCH LOGIC **/
-
-    protected void startSearchService() {
-        mPodcastsReceiver = new SearchPodcastsReceiver();
-        IntentFilter intentFilter = new IntentFilter(SearchPodcastsService.ACTION_RESPONSE);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        mActivity.registerReceiver(mPodcastsReceiver, intentFilter);
-
-        Intent intent = new Intent(mActivity, SearchPodcastsService.class);
-        intent.putExtra(Config.QUERY_TAG, mQuery);
-        mActivity.startService(intent);
+    public void onPause(){
+        super.onPause();
+        getActivity().unregisterReceiver(mPodcastsReceiver);
     }
+
+//    public ListView.OnItemClickListener mFavListener = new ListView.OnItemClickListener() {
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            Cursor cursor = (Cursor) mAdapter.getItem(position);
+//            long _id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"));
+//            Podcast podcast = Podcast.load(Podcast.class, _id);
+//            PodcastFav.createOrDestroyFav(podcast);
+//
+//            Log.d(Config.DEBUG_TAG, "++ Favlistener clicked position: " + String.valueOf(_id));
+//        }
+//    };
+
 
     /** LOADER CALLBACKS **/
 
     @Override
-    public Loader<Object> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d(Config.DEBUG_TAG, "+++ onCreateLoader() called! +++");
-//        return new AppListLoader(getActivity());
-        return null;
+
+        /**
+         * Don't need custom CursorLoader unless hitting database rather than through AA.
+         * If using built-in CursorLoader, use a Content Provider (query, getType, CRUD).
+         * CursorLoader queries and fills cursor in a background thread
+         */
+
+        Uri contentProviderUri = ContentProvider.createUri(Podcast.class, null);
+        Loader<Cursor> loader = new CursorLoader(getActivity(),
+                contentProviderUri, null, null, null, null);
+
+        return loader;
     }
 
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.d(Config.DEBUG_TAG, "+++ onLoadFinished() called! +++");
-
+        mAdapter.swapCursor(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<Object> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
         Log.d(Config.DEBUG_TAG, "+++ onLoaderReset() called! +++");
+        mAdapter.swapCursor(null);
+    }
 
+
+    /** SEARCH LOGIC **/
+
+    public void startSearchService() {
+        mPodcastsReceiver = new SearchPodcastsReceiver();
+        IntentFilter intentFilter = new IntentFilter(SearchPodcastsService.ACTION_RESPONSE);
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+
+        Activity act = getActivity();
+        act.registerReceiver(mPodcastsReceiver, intentFilter);
+
+        Intent intent = new Intent(act, SearchPodcastsService.class);
+        intent.putExtra(Config.SEARCH_IN, mQuery);
+        act.startService(intent);
     }
 
     public class SearchPodcastsReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             int count = Podcast.count();
-            Log.d(Config.DEBUG_TAG, "onReceive in frag search items: " + String.valueOf(count));
-//            mPodcastInfos = (ArrayList<PodcastInfo>) intent.getSerializableExtra("data");
-//            if (mPodcastInfos != null && mPodcastInfos.size() > 0) {
-//                Log.d(Config.DEBUG_TAG, "found mPodcastInfos");
-////                mAdapter.updateData(mPodcastInfos);
-//            } else {
-//                Toast.makeText(mActivity, "no podcasts were found", Toast.LENGTH_LONG).show();
-//            }
+
+            if (!intent.getBooleanExtra(Config.SEARCH_OUT, false)) {
+                Log.d(Config.DEBUG_TAG, "failed to get data! count: " + String.valueOf(count));
+                Toast.makeText(getActivity(), "no podcasts were found", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d(Config.DEBUG_TAG, "got data! count: " + String.valueOf(count));
+            }
+
         }
     }
 }

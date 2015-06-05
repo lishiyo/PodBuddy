@@ -38,16 +38,19 @@ public class HomeActivity extends SearchableActivity {
         if (savedInstanceState == null) {
             setupFragFavs();
         }
+
+        handleIntent(getIntent());
     }
 
     protected void setupFragFavs() {
         // frag handles data loading from content provider
         if (mFragContainer != null) {
-            mPodcastFavsFrag = new PodcastFavsFrag();
-            mFM.beginTransaction().add(mFragContainerId, mPodcastFavsFrag).commit();
+            mPodcastFavsFrag = PodcastFavsFrag.newInstance();
+            mFM.beginTransaction().replace(mFragContainerId, mPodcastFavsFrag).addToBackStack(null).commit();
         }
     }
 
+    // Sets search frag view => calls startSearchService
     protected void setupFragSearch() {
         if (mFragContainer != null) {
             mPodcastSearchFrag = PodcastSearchFrag.newInstance(mCurrQuery);
@@ -58,17 +61,17 @@ public class HomeActivity extends SearchableActivity {
     /** SEARCH LOGIC **/
 
     // only if activity launchMode="singleTop"
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-    }
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        setIntent(intent);
+//        handleIntent(intent);
+//    }
 
     protected void handleIntent(Intent intent) {
-        this.mCurrQuery = intent.getStringExtra(SearchManager.QUERY);
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            this.mCurrQuery = intent.getStringExtra(SearchManager.QUERY);
 
-        // switch PodcastFavsFrag to PodcastSearchFrag
-        setupFragSearch();
+            setupFragSearch();
+        }
     }
-
 }
