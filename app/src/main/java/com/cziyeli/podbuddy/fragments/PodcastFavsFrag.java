@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.activeandroid.content.ContentProvider;
@@ -28,6 +29,8 @@ import com.cziyeli.podbuddy.models.PodcastFav;
 import com.cziyeli.podbuddy.services.ListenLatestService;
 import com.google.gson.Gson;
 
+import java.io.IOException;
+
 /**
  * Created by connieli on 6/3/15.
  */
@@ -35,7 +38,12 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
     public static final int LOADER_ID = 0;
     private PodcastFavsAdapter mAdapter;
     private ListView mListView;
+
     public ListenLatestReceiver mListenReceiver;
+    public boolean mEpisodeIsPlaying = false;
+    public MediaPlayer mPodcastPlayer;
+
+    Button stopButton;
 
     public static PodcastFavsFrag newInstance() {
         PodcastFavsFrag f = new PodcastFavsFrag();
@@ -47,12 +55,6 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new PodcastFavsAdapter(getActivity(), null);
-
-        // Register Listen Latest Receiver
-        mListenReceiver = new ListenLatestReceiver();
-        IntentFilter intentFilter = new IntentFilter(ListenLatestService.ACTION_RESPONSE);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        getActivity().registerReceiver(mListenReceiver, intentFilter);
     }
 
     // STEP 3
@@ -65,6 +67,10 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(mListenListener);
 
+        // TEST stop
+        stopButton = (Button) v.findViewById(R.id.stopPlayerBtn);
+        
+
         return v;
     }
 
@@ -74,15 +80,22 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
 //            Cursor cursor = (Cursor) mAdapter.getItem(position);
 //            long podcast_id = cursor.getLong(cursor.getColumnIndexOrThrow("podcast_id"));
 //            startListenService(podcast_id);
-            Log.d(Config.DEBUG_TAG, "++ clicked position, not starting listen service! ");
+            Log.d(Config.DEBUG_TAG, "++ clicked position in list, not starting listen service! ");
 
-            /** go to Fav detail view **/
+            /** go to PodcastFav detail view **/
         }
     };
 
     // STEP 4
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
+
+        // Register Listen Latest Receiver
+        mListenReceiver = new ListenLatestReceiver();
+        IntentFilter intentFilter = new IntentFilter(ListenLatestService.ACTION_RESPONSE);
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        getActivity().registerReceiver(mListenReceiver, intentFilter);
+        Log.e(Config.DEBUG_TAG, "onactivitycreated");
 
         // Initialize a Loader with id '0'. If the Loader with this id already
         // exists, then the LoaderManager will reuse the existing Loader.
@@ -91,7 +104,10 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
 
     public void onPause(){
         super.onPause();
-        getActivity().unregisterReceiver(mListenReceiver);
+        Log.e(Config.DEBUG_TAG, "onPause");
+        if (mListenReceiver != null) {
+            getActivity().unregisterReceiver(mListenReceiver);
+        }
     }
 
 
@@ -127,28 +143,53 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
             String jsonMyObject;
             Bundle extras = intent.getExtras();
 
+            jsonMyObject = extras.getString(Config.LISTEN_OUT);
+            PodcastEpisode episode = new Gson().fromJson(jsonMyObject, PodcastEpisode.class);
+//            Uri uri = Uri.parse(episode.getMediaUrl());
+            Log.d(Config.DEBUG_TAG, "listenlatestreceiver on receive! " + episode.getMediaUrl());
+            // need to check create or pause here
+
             if (extras != null) {
-                jsonMyObject = extras.getString(Config.LISTEN_OUT);
-                PodcastEpisode episode = new Gson().fromJson(jsonMyObject, PodcastEpisode.class);
-                Log.d(Config.DEBUG_TAG, "frag on receive! " + episode.getMediaUrl());
+                // If mediaPlayer already playing, stop on click
+                if (mEpisodeIsPlaying) {
+                    Log.e(Config.DEBUG_TAG, "mEpisodeIsPlaying");
+                    mPodcastPlayer.reset();
+                    mEpisodeIsPlaying = false;
+                    return;
+                }
 
-                Uri uri = Uri.parse(episode.getMediaUrl());
-                final MediaPlayer mediaPlayer = MediaPlayer.create(context, uri);
+                Log.e(Config.DEBUG_TAG, "episode is not playing!");
 
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                // create or prepare if already
+                if (mPodcastPlayer == null) {
+                    mPodcastPlayer = new MediaPlayer();
+                }
+//                    mPodcastPlayer = MediaPlayer.create(context, uri);
+
+                try {
+                    mPodcastPlayer.reset();
+                    mPodcastPlayer.setDataSource(episode.getMediaUrl());
+                    mPodcastPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mPodcastPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
-                        if (mp == mediaPlayer) {
-                            Log.d(Config.DEBUG_TAG, "mp == mediaPlayer");
-                            mediaPlayer.start();
+                        if (mp == mPodcastPlayer) {
+                            mPodcastPlayer.start();
+                            mEpisodeIsPlaying = true;
                         }
                     }
                 });
 
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                mPodcastPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
+                        mp.stop();
                         mp.release();
+                        mEpisodeIsPlaying = false;
                     }
                 });
 

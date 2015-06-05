@@ -13,4 +13,18 @@ public class Config {
 
     public static final String LISTEN_IN = "id";
     public static final String LISTEN_OUT = "listen_out";
+
+
+    public interface ACTION {
+        public static String MAIN_ACTION = PACKAGE_BASE + ".action.main";
+        public static String PREV_ACTION = PACKAGE_BASE + ".action.prev";
+        public static String PLAY_ACTION = PACKAGE_BASE + ".action.play";
+        public static String NEXT_ACTION = PACKAGE_BASE + ".action.next";
+        public static String STARTFOREGROUND_ACTION = PACKAGE_BASE + ".action.startforeground";
+        public static String STOPFOREGROUND_ACTION = PACKAGE_BASE + ".action.stopforeground";
+    }
+
+    public interface NOTIFICATION_ID {
+        public static int FOREGROUND_SERVICE = 101;
+    }
 }

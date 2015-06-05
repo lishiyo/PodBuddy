@@ -29,10 +29,12 @@
         <service
             android:name=".services.ListenLatestService"
             android:exported="false"/>
+        <service android:name=".services.ForegroundService"  />
 
         <activity
             android:name=".HomeActivity"
             android:theme="@style/Theme.MyCompatTheme"
+            android:launchMode="singleTask"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

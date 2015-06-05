@@ -77,6 +77,7 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
 
+        // Register receiver
         startSearchService();
 
         // Initialize a Loader with id '1'. If the Loader with this id already
@@ -86,7 +87,9 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
 
     public void onPause(){
         super.onPause();
-        getActivity().unregisterReceiver(mPodcastsReceiver);
+        if (mPodcastsReceiver != null) {
+            getActivity().unregisterReceiver(mPodcastsReceiver);
+        }
     }
 
 //    public ListView.OnItemClickListener mFavListener = new ListView.OnItemClickListener() {
