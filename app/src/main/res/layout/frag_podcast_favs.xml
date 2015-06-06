@@ -16,12 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/stopPlayerBtn"
-        android:text="Stop Foreground Service"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <ListView
         android:id="@+id/podcast_favs_list"
         android:layout_width="match_parent"

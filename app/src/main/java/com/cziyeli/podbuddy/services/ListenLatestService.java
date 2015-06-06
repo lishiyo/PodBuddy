@@ -30,7 +30,6 @@ public class ListenLatestService extends IntentService {
         try {
             PodcastInfo podcastInfo = ITunesSearchClient.getPodcastInfo(podcast_id);
             episode = ITunesSearchClient.getLatestEpisode(podcastInfo);
-            Log.d(Config.DEBUG_TAG, "onHandleIntent listen! " + episode.getTitle() + " with url: " + episode.getMediaUrl());
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -41,10 +40,12 @@ public class ListenLatestService extends IntentService {
     }
 
     protected void broadcastResults(PodcastEpisode episode) {
-        Log.d(Config.DEBUG_TAG, "broadcastResults! " + episode.getTitle() + " with url: " + episode.getMediaUrl());
+        Log.d(Config.DEBUG_TAG, "ListenLatestService broadcastResults: " + episode.getTitle());
+
         Intent intentResponse = new Intent();
         intentResponse.setAction(ACTION_RESPONSE);
         intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
+
         intentResponse.putExtra(Config.LISTEN_OUT, new Gson().toJson(episode));
         sendBroadcast(intentResponse);
     }

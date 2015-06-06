@@ -30,6 +30,8 @@
             android:name=".services.ListenLatestService"
             android:exported="false"/>
         <service android:name=".services.ForegroundService"  />
+        <service android:name=".services.MediaPlayerService"  />
+
 
         <activity
             android:name=".HomeActivity"
@@ -75,5 +77,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
 </manifest>

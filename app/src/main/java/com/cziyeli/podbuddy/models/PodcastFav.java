@@ -9,6 +9,9 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.bdenney.itunessearch.ITunesSearchClient;
+import com.bdenney.itunessearch.PodcastEpisode;
+import com.bdenney.itunessearch.PodcastInfo;
 import com.cziyeli.podbuddy.Config;
 
 import java.sql.Date;
@@ -118,8 +121,25 @@ public class PodcastFav extends Model {
         return ids;
     }
 
-    /** UTILS **/
+    public static String[] allLatestEpisodeUrls() {
+        List<PodcastFav> favs = getAll();
+        String[] allUrls = new String[favs.size()];
+        long podcast_id;
+        PodcastInfo podcastInfo;
+        PodcastEpisode episode;
 
+        for (int i = 0; i < allUrls.length; i++) {
+            podcast_id = favs.get(i).podcast_id;
+            podcastInfo = ITunesSearchClient.getPodcastInfo(podcast_id);
+            episode = ITunesSearchClient.getLatestEpisode(podcastInfo);
+            allUrls[i] = episode.getMediaUrl();
+        }
+
+        return allUrls;
+    }
+
+
+    /** UTILS **/
 
     // parse strings into date object for time_last_listen
     public void setDateFromString(String date) throws ParseException {

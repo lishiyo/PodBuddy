@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,6 @@ import com.cziyeli.podbuddy.services.SearchPodcastsService;
  * Attached FavBtn listeners in Adapter
  */
 public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    // id is specific to the fragment's loader
     public static final int LOADER_ID = 1;
     public String mQuery = "";
     private TextView mSearchTitleView;
@@ -68,8 +68,9 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
         mSearchTitleView.setText(mQuery);
         mListView = (ListView) v.findViewById(R.id.podcast_search_list);
         mListView.setAdapter(mAdapter);
-//        mListView.setOnItemClickListener(mFavListener);
+        mListView.setOnItemClickListener(mSearchListener);
 
+        Log.d(Config.DEBUG_TAG, "setting up frag search!");
         return v;
     }
 
@@ -85,24 +86,27 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
-    public void onPause(){
-        super.onPause();
+    // REWIND: STEP 1
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
         if (mPodcastsReceiver != null) {
             getActivity().unregisterReceiver(mPodcastsReceiver);
         }
     }
 
-//    public ListView.OnItemClickListener mFavListener = new ListView.OnItemClickListener() {
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    /** Click Podcast row => detail view **/
+    public ListView.OnItemClickListener mSearchListener = new ListView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //            Cursor cursor = (Cursor) mAdapter.getItem(position);
 //            long _id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"));
 //            Podcast podcast = Podcast.load(Podcast.class, _id);
 //            PodcastFav.createOrDestroyFav(podcast);
-//
-//            Log.d(Config.DEBUG_TAG, "++ Favlistener clicked position: " + String.valueOf(_id));
-//        }
-//    };
+
+            Log.d(Config.DEBUG_TAG, "++ Favlistener clicked position ");
+        }
+    };
 
 
     /** LOADER CALLBACKS **/
