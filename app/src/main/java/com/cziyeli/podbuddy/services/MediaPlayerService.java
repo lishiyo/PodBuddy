@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.cziyeli.podbuddy.Config;
 import com.cziyeli.podbuddy.R;
+import com.cziyeli.podbuddy.models.PodcastFav;
 
 import java.io.IOException;
 
@@ -42,7 +43,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     private MediaController mController;
 
     private String mMediaUrl;
-    private String[] mMediaQueue;
+    // TODO: pass in position from intent, get all PodcastFavs
+    private PodcastFav[] mMediaQueue;
 
     public static boolean first_time_through = true;
 
@@ -53,8 +55,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(Config.DEBUG_TAG, "onStartCommand");
-
         if( mManager == null ) {
             try {
                 initMediaSessions(intent);
@@ -66,7 +66,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         handleIntent( intent );
         return super.onStartCommand(intent, flags, startId);
     }
-
 
     private void handleIntent( Intent intent ) {
         if( intent == null || intent.getAction() == null )
@@ -89,14 +88,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
             mController.getTransportControls().stop();
         } else if (action.equalsIgnoreCase ( ACTION_START_NEW )) {
-            // from Favs click listener
+            // 'Listen Latest' click
             startNewPodcast(intent);
             mController.getTransportControls().play();
         }
     }
 
-
-    // First time
+    // First time initializer
     public void createPodcastPlayer(Intent intent) {
         mPodcastPlayer = new MediaPlayer();
         mMediaUrl = intent.getStringExtra(Config.MEDIA_URL);
@@ -112,11 +110,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
+    /** Click 'Listen Latest' - reset listen latest **/
     private void startNewPodcast(Intent intent) {
         if (mPodcastPlayer == null) {
             createPodcastPlayer(intent);
-        } else { // mManager already exists, just reset media url
-            Log.d(Config.DEBUG_TAG, "mPodcastPlayer exists, resetting");
+        } else { // mManager already exists - reset new url
             mMediaUrl = intent.getStringExtra(Config.MEDIA_URL);
             try {
                 if (mPodcastPlayer.isPlaying()) {
@@ -176,7 +174,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     /** mPodcastPlayer callbacks **/
 
     public void onPrepared(MediaPlayer mp) {
-        Log.d(Config.DEBUG_TAG, "onPrepared ready! " + mMediaUrl);
         if (mp == mPodcastPlayer) {
             mPodcastPlayer.start();
         }
@@ -188,7 +185,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 //        mp.release();
 //    }
 
-    /** One Media Player, reset mediaUrl each time **/
+    /** Only called the first time (no Media Manager yet) **/
     private void initMediaSessions(Intent intent) throws IOException {
         createPodcastPlayer(intent);
 
@@ -202,10 +199,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mSession.setCallback(new MediaSession.Callback() {
                  @Override
                  public void onPlay() {
-                     Log.d(Config.DEBUG_TAG, "onPlay with mMediaUrl: " + mMediaUrl);
                      super.onPlay();
                      buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE));
 
+                     Log.d(Config.DEBUG_TAG, "onPlay with mMediaUrl: " + mMediaUrl);
+                     // Don't call start the first time - prepareAsync may not be ready
                      if(first_time_through == true) {
                          first_time_through = false;
                      } else {

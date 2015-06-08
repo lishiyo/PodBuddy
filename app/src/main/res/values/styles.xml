@@ -3,9 +3,18 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
+
+        <!-- ripple effect -->
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="selectableItemBackground">@drawable/ripple_standard</item>
+        <item name="android:selectableItemBackground">@drawable/ripple_standard</item>
+        <!-- for the following two, use a different ripple without mask -->
+        <item name="selectableItemBackgroundBorderless">@drawable/ripple_standard</item>
+        <item name="android:selectableItemBackgroundBorderless">@drawable/ripple_standard</item>
     </style>
 
     <style name="Theme.MyCompatTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <!-- we can set windowBackground to drawable -->
         <item name="android:windowBackground">@color/mainBackground</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="actionBarStyle">@style/ActionBar</item>
@@ -15,6 +24,7 @@
 
         <!-- Support library compatibility -->
         <item name="homeAsUpIndicator">@drawable/tv_bluegreen</item>
+
     </style>
 
     <style name="ActionBar"
@@ -52,7 +62,7 @@
     <style name="PodcastProducer">
         <item name="android:textSize">@dimen/text_main</item>
         <item name="android:textColor">@color/mainBackground</item>
-        <item name="android:clickable">false</item>
+        <!--<item name="android:clickable">false</item>-->
     </style>
 
     <style name="ButtonYellow">

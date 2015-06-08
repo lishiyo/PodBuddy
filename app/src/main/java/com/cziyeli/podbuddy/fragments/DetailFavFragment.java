@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import java.util.List;
  */
 public class DetailFavFragment extends Fragment {
     public static final String PODCAST_FAV = "PODCAST_FAV";
-
     public PodcastFav mPodcast;
     public TextView mTitleView;
     public TextView mProducerView;
@@ -97,8 +95,6 @@ public class DetailFavFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PodcastFav fav) {
-            Log.d(Config.DEBUG_TAG, "++ onPostExecute!! ++ " + fav.podcast_name);
-
             mPodcast = fav;
             mTitleView.setText(mPodcast.podcast_name);
             mProducerView.setText(mPodcast.producer_name);

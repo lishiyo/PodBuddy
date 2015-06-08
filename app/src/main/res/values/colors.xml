@@ -14,4 +14,10 @@
 
     <color name="genius">#ffc31c</color>
     <color name="post_header_text">@android:color/white</color>
+
+    <!-- main color for drawable-v21/my_ripple -->
+    <color name="my_color_highlight">#FFE99E63</color>
+    <!-- main color for drawable/my_ripple -->
+    <color name="my_color_highlight_press">#77E99E63</color>
+    <color name="my_color_highlight_focus">#CCE99E63</color>
 </resources>

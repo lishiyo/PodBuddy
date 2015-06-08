@@ -25,10 +25,10 @@
 
     <Button
         android:id="@+id/detail_listen_btn"
+        android:background="@drawable/button"
         style="@style/ButtonYellow"
         android:text="@string/act_listen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
 
 </LinearLayout>
