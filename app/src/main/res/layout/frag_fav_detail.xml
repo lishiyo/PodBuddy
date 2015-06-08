@@ -5,6 +5,7 @@
 
     <TextView
         android:id="@+id/detail_title"
+        style="@style/CenteredText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -14,13 +15,17 @@
 
     <TextView
         android:id="@+id/detail_producer"
+        style="@style/CenteredText"
+        android:alpha="0.67"
+        android:textSize="@dimen/text_main"
+        android:textColor="@android:color/background_light"
+        android:textStyle="italic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/detail_listen_btn"
-        android:clickable="true"
-        android:focusable="false"
+        style="@style/ButtonYellow"
         android:text="@string/act_listen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
