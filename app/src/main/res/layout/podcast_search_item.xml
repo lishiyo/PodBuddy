@@ -4,19 +4,19 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:padding="@dimen/thin_strip"
     android:clickable="false"
     android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/podcast_name"
-        android:clickable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_title"
-        android:textColor="@color/gray_dark" />
+        style="@style/PodcastTitle" />
 
     <LinearLayout
         android:orientation="horizontal"
+        android:layout_marginTop="@dimen/activity_gutters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -24,16 +24,16 @@
             android:id="@+id/producer_name"
             android:layout_width="0dp"
             android:layout_weight="2"
-            android:clickable="false"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/text_title"
-            android:textColor="@color/gray_dark" />
+            style="@style/PodcastProducer" />
 
         <Button
             android:id="@+id/favBtn"
             android:clickable="true"
             android:text="@string/act_fav"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:textSize="@dimen/text_main"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
 

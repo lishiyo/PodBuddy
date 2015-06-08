@@ -26,11 +26,8 @@ import java.util.List;
  * Created by connieli on 6/7/15.
  */
 public class DetailFavFragment extends Fragment {
-    public static final String POSITION = "POSITION";
     public static final String PODCAST_FAV = "PODCAST_FAV";
-    public Activity mActivity;
 
-//    public int mStartPos;
     public PodcastFav mPodcast;
     public TextView mTitleView;
     public TextView mProducerView;
@@ -40,10 +37,17 @@ public class DetailFavFragment extends Fragment {
     public static DetailFavFragment newInstance(int position, long podcast_id) {
         DetailFavFragment frag = new DetailFavFragment();
         Bundle args = new Bundle();
-//        args.putInt(POSITION, position);
         args.putLong(PODCAST_FAV, podcast_id);
         frag.setArguments(args);
         return frag;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // TODO: WTF we need to send activity to AsyncTask or getActivity() returns null??
+        setPodcastData(activity);
     }
 
     @Override
@@ -69,25 +73,20 @@ public class DetailFavFragment extends Fragment {
         super.onActivityCreated(bundle);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // Need to store activity for AsyncTask or getActivity() returns null
-        mActivity = activity;
-        setPodcastData();
-    }
-
-
-    public void setPodcastData(){
+    public void setPodcastData(Activity activity){
         Bundle args = getArguments();
-        AsyncFetchPodcast fetchPodcast = new AsyncFetchPodcast();
-        fetchPodcast.execute(args.getLong(PODCAST_FAV));
+        new AsyncFetchPodcast(activity).execute(args.getLong(PODCAST_FAV));
     }
 
     /** ASYNC TASKS - Database queries **/
 
     public class AsyncFetchPodcast extends AsyncTask<Long, List<Model>, PodcastFav> {
+        private Activity mActivity;
+
+        public AsyncFetchPodcast(Activity activity) {
+            super();
+            mActivity = activity;
+        }
 
         @Override
         protected PodcastFav doInBackground(Long... params) {

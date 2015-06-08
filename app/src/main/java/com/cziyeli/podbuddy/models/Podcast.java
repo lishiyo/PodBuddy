@@ -77,10 +77,10 @@ public class Podcast extends Model {
             fav.delete();
         }
 
-        this.toggleFav();
+        this.toggleFavStatus();
     }
 
-    public void toggleFav() {
+    public void toggleFavStatus() {
         this.favorited = (this.favorited == 0) ? 1 : 0;
         this.save();
     }

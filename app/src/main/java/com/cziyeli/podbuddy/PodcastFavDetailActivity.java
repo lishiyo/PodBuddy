@@ -36,12 +36,12 @@ public class PodcastFavDetailActivity extends SearchableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_viewpager);
+        setContentView(R.layout.activity_detail_favs);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
         AsyncFetchAllPodcasts fetcher = new AsyncFetchAllPodcasts();
         fetcher.execute();
 
-        mViewPager = (ViewPager) findViewById(R.id.pager);
     }
 
     // only if activity launchMode="singleTop" or "singleTask"
@@ -54,8 +54,6 @@ public class PodcastFavDetailActivity extends SearchableActivity {
     protected void handleIntent(Intent intent) {
         mStartPos = intent.getIntExtra(Config.DETAIL_IN, 0);
         mViewPager.setCurrentItem(mStartPos);
-
-        mPagerAdapter.loadFragmentData();
     }
 
     @Override
@@ -102,14 +100,13 @@ public class PodcastFavDetailActivity extends SearchableActivity {
         }
     }
 
-    /** ViewPager listener **/
+    /** ViewPager listeners **/
 
     public ViewPager.OnPageChangeListener mViewPagerListener = new ViewPager.OnPageChangeListener() {
 
-        // This method will be invoked when a new page becomes selected BEFORE instantiating it!
+        // This method will be invoked when a new page becomes selected BEFORE instantiating it
         @Override
         public void onPageSelected(int position) {
-
         }
 
         // This method will be invoked when the current page is scrolled
@@ -145,7 +142,7 @@ public class PodcastFavDetailActivity extends SearchableActivity {
         public Fragment getItem(int position) {
             // Instantiate DetailFrag with PodcastFav model
             PodcastFav fav = mPodcastFavs.get(position);
-            Log.d(Config.DEBUG_TAG, "mAdapter registeredFrags count: " + String.valueOf(registeredFragments.size()));
+            Log.d(Config.DEBUG_TAG, "+++ getItem position: " + String.valueOf(position));
             return DetailFavFragment.newInstance(position, fav.podcast_id);
         }
 
@@ -162,7 +159,6 @@ public class PodcastFavDetailActivity extends SearchableActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(Config.DEBUG_TAG, "PodcastFavDetailActivty onReceive ++++");
             Bundle extras = intent.getExtras();
             String jsonMyObject = extras.getString(Config.LISTEN_OUT);
             PodcastEpisode episode = new Gson().fromJson(jsonMyObject, PodcastEpisode.class);

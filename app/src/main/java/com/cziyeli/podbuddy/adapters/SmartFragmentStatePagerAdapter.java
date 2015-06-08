@@ -3,11 +3,8 @@ package com.cziyeli.podbuddy.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewGroup;
-
-import com.cziyeli.podbuddy.Config;
 
 /**
    Extension of FragmentStatePagerAdapter which intelligently caches
@@ -22,12 +19,12 @@ public abstract class SmartFragmentStatePagerAdapter extends FragmentStatePagerA
         super(fragmentManager);
     }
 
-    // Register the fragment when the item is instantiated
+    // This is called AFTER getItem creates newInstance
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         Fragment fragment = (Fragment) super.instantiateItem(container, position);
         registeredFragments.put(position, fragment);
-        Log.d(Config.DEBUG_TAG, "SmartFragment adapter INSTANTIATE item: " + String.valueOf(position) + " with registeredFragments length: " + String.valueOf(registeredFragments.size()));
+
         return fragment;
     }
 
@@ -38,12 +35,9 @@ public abstract class SmartFragmentStatePagerAdapter extends FragmentStatePagerA
         super.destroyItem(container, position, object);
     }
 
-    // Returns the fragment for the mStartPos (if instantiated)
+    // Returns the fragment for the ViewPager (if instantiated)
     public Fragment getRegisteredFragment(int position) {
-        Log.d(Config.DEBUG_TAG, "++++ getRegisteredFragment: " + String.valueOf(position));
-
         return registeredFragments.get(position);
     }
 
-    public void loadFragmentData() {}
 }

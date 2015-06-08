@@ -5,7 +5,7 @@
     <dimen name="activity_gutters">4dp</dimen>
 
     <dimen name="text_bold">24sp</dimen>
-    <dimen name="text_title">16sp</dimen>
+    <dimen name="text_title">18sp</dimen>
     <dimen name="text_main">14sp</dimen>
     <dimen name="text_small">10sp</dimen>
 
@@ -15,7 +15,7 @@
 
     <dimen name="text_padding">10dp</dimen>
 
-    <dimen name="thin_strip">4dp</dimen>
+    <dimen name="thin_strip">6dp</dimen>
     <dimen name="content_row">20dp</dimen>
 
     <!-- podcasts -->

@@ -70,7 +70,6 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(mSearchListener);
 
-        Log.d(Config.DEBUG_TAG, "setting up frag search!");
         return v;
     }
 
@@ -95,7 +94,7 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
         }
     }
 
-    /** Click Podcast row => detail view **/
+    /** Click Podcast row => detail search view **/
     public ListView.OnItemClickListener mSearchListener = new ListView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -105,6 +104,7 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
 //            PodcastFav.createOrDestroyFav(podcast);
 
             Log.d(Config.DEBUG_TAG, "++ Favlistener clicked mStartPos ");
+            // TODO: Create Detail pager for search items
         }
     };
 
@@ -160,7 +160,7 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!intent.getBooleanExtra(Config.SEARCH_OUT, false)) {
-                Toast.makeText(getActivity(), "no podcasts were found", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "no podcasts were found :(", Toast.LENGTH_LONG).show();
             }
         }
     }

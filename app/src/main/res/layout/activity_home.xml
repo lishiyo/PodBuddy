@@ -4,12 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/home_title"
-        android:text="My Favorites"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <!-- frags here: frag_podcast_favs -->
     <RelativeLayout
         android:id="@+id/podcast_list_container"

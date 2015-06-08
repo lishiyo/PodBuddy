@@ -2,6 +2,7 @@ package com.cziyeli.podbuddy.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +53,14 @@ public class PodcastSearchAdapter extends CursorAdapter {
         holder.mPodcastName.setText(podcastName);
         holder.mProducerName.setText(producerName);
         holder.mFavBtn.setTag(p_id);
+
+        // Switch button styles to toggle fav
         int btntext = isFavorited ? R.string.act_unfav : R.string.act_fav;
+        int btnColor = isFavorited ? Color.LTGRAY : view.getResources().getColor(R.color.genius);
+        int btnTextColor = isFavorited ? Color.WHITE : Color.BLACK;
         holder.mFavBtn.setText(btntext);
+        holder.mFavBtn.setBackgroundColor(btnColor);
+        holder.mFavBtn.setTextColor(btnTextColor);
     }
 
     public View.OnClickListener mToggleFavListener = new View.OnClickListener() {
@@ -64,7 +71,6 @@ public class PodcastSearchAdapter extends CursorAdapter {
             if (podcast != null) {
                 podcast.createOrDestroyFav();
             }
-//            PodcastFav.createOrDestroyFav(p_id);
         }
     };
 

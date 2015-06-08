@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.cziyeli.podbuddy.fragments.PodcastFavsFrag;
 import com.cziyeli.podbuddy.fragments.PodcastSearchFrag;
@@ -15,7 +14,6 @@ import com.cziyeli.podbuddy.fragments.PodcastSearchFrag;
  * Home view - show frag Favs, SearchResults
  */
 public class HomeActivity extends SearchableActivity {
-    private TextView mHomeTitle;
     public RelativeLayout mFragContainer;
     public int mFragContainerId = R.id.podcast_list_container;
 
@@ -29,7 +27,6 @@ public class HomeActivity extends SearchableActivity {
         setContentView(R.layout.activity_home);
 
         mFM = getSupportFragmentManager();
-        mHomeTitle = (TextView) findViewById(R.id.home_title);
         mFragContainer = (RelativeLayout) findViewById(R.id.podcast_list_container);
 
         if (savedInstanceState == null) {

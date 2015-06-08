@@ -13,6 +13,7 @@
     <TextView
         android:id="@+id/search_title"
         android:text="SEARCH"
+        style="@style/CenteredText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
