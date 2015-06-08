@@ -15,7 +15,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/podcastName"
+            android:id="@+id/podcast_name"
             android:clickable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:textColor="@color/gray_dark" />
 
         <TextView
-            android:id="@+id/producerName"
+            android:id="@+id/producer_name"
             android:clickable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/listenBtn"
+        android:id="@+id/listen_btn"
         android:clickable="true"
         android:focusable="false"
         android:text="@string/act_listen"

@@ -10,8 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.cziyeli.podbuddy.fragments.ImageFragment;
-import com.cziyeli.podbuddy.fragments.SecondFragment;
+import com.cziyeli.podbuddy.fragments.TEST_ImageFragment;
+import com.cziyeli.podbuddy.fragments.TEST_SecondFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -81,18 +81,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // calls all the fragments which are to be displayed according to the position
+            // calls all the fragments which are to be displayed according to the mStartPos
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.d(Config.DEBUG_TAG, "getItem at position: " + String.valueOf(position));
+            // Return a TEST_PlaceholderFragment (defined as a static inner class below).
+            Log.d(Config.DEBUG_TAG, "getItem at mStartPos: " + String.valueOf(position));
 
             switch (position) {
                 case 0: // Fragment # 0 - This will show image
-                    return ImageFragment.init(position);
+                    return TEST_ImageFragment.init(position);
                 case 1: // Fragment # 1 - This will show image
-                    return ImageFragment.init(position);
+                    return TEST_ImageFragment.init(position);
                 default:// List fragment
-                    return SecondFragment.newInstance(2, "Page # 3");
+                    return TEST_SecondFragment.newInstance(2, "Page # 3");
             }
         }
 
@@ -103,17 +103,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
 //        @Override
-//        public CharSequence getPageTitle(int position) {
+//        public CharSequence getPageTitle(int mStartPos) {
 //            Locale l = Locale.getDefault();
-//            switch (position) {
+//            switch (mStartPos) {
 //                case 0:
-//                    return ImageFragment.init(position);
+//                    return TEST_ImageFragment.init(mStartPos);
 //                case 1:
-//                    return ImageFragment.init(position);
+//                    return TEST_ImageFragment.init(mStartPos);
 //                case 2:
-//                    return TruitonListFragment.init(position);
+//                    return TruitonListFragment.init(mStartPos);
 //                default:
-//                    return TruitonListFragment.init(position);
+//                    return TruitonListFragment.init(mStartPos);
 //            }
 //            return null;
 //        }
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 //    /**
 //     * A placeholder fragment containing a simple view.
 //     */
-//    public static class PlaceholderFragment extends Fragment {
+//    public static class TEST_PlaceholderFragment extends Fragment {
 //        /**
 //         * The fragment argument representing the section number for this
 //         * fragment.
@@ -133,15 +133,15 @@ public class MainActivity extends AppCompatActivity {
 //         * Returns a new instance of this fragment for the given section
 //         * number.
 //         */
-//        public static PlaceholderFragment newInstance(int sectionNumber) {
-//            PlaceholderFragment fragment = new PlaceholderFragment();
+//        public static TEST_PlaceholderFragment newInstance(int sectionNumber) {
+//            TEST_PlaceholderFragment fragment = new TEST_PlaceholderFragment();
 //            Bundle args = new Bundle();
 //            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 //            fragment.setArguments(args);
 //            return fragment;
 //        }
 //
-//        public PlaceholderFragment() {
+//        public TEST_PlaceholderFragment() {
 //        }
 //
 //        @Override

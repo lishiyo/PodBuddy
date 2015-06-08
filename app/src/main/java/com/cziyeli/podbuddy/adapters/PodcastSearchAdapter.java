@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.cziyeli.podbuddy.R;
 import com.cziyeli.podbuddy.models.Podcast;
-import com.cziyeli.podbuddy.models.PodcastFav;
 
 /**
  * Add ViewHolder caching
@@ -36,10 +35,10 @@ public class PodcastSearchAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.mPodcastName = (TextView) view.findViewById(R.id.podcastName);
-            holder.mProducerName = (TextView) view.findViewById(R.id.producerName);
+            holder.mPodcastName = (TextView) view.findViewById(R.id.podcast_name);
+            holder.mProducerName = (TextView) view.findViewById(R.id.producer_name);
             holder.mFavBtn = (Button) view.findViewById(R.id.favBtn);
-            holder.mFavBtn.setOnClickListener(mFavClickListener);
+            holder.mFavBtn.setOnClickListener(mToggleFavListener);
             view.setTag(holder);
         }
 
@@ -47,22 +46,25 @@ public class PodcastSearchAdapter extends CursorAdapter {
         String podcastName = cursor.getString(cursor.getColumnIndexOrThrow("podcast_name"));
         String producerName = cursor.getString(cursor.getColumnIndexOrThrow("producer_name"));
         boolean isFavorited = cursor.getInt(cursor.getColumnIndexOrThrow("favorited")) == 1 ? true : false;
-        long _id = cursor.getLong(cursor.getColumnIndexOrThrow("_id")); // AA id
+        long p_id = cursor.getLong(cursor.getColumnIndexOrThrow("podcast_id")); // AA id
 
         // Populate fields with extracted properties
         holder.mPodcastName.setText(podcastName);
         holder.mProducerName.setText(producerName);
-        holder.mFavBtn.setTag(_id);
+        holder.mFavBtn.setTag(p_id);
         int btntext = isFavorited ? R.string.act_unfav : R.string.act_fav;
         holder.mFavBtn.setText(btntext);
     }
 
-    public View.OnClickListener mFavClickListener = new View.OnClickListener() {
+    public View.OnClickListener mToggleFavListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             long p_id = (long) v.getTag();
-            Podcast podcast = Podcast.load(Podcast.class, p_id);
-            PodcastFav.createOrDestroyFav(podcast);
+            Podcast podcast = Podcast.findPodcastByPodcastId(p_id);
+            if (podcast != null) {
+                podcast.createOrDestroyFav();
+            }
+//            PodcastFav.createOrDestroyFav(p_id);
         }
     };
 

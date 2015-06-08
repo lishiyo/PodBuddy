@@ -12,11 +12,11 @@ import com.cziyeli.podbuddy.R;
 /**
  * Created by connieli on 6/2/15.
  */
-public class ImageFragment extends Fragment {
+public class TEST_ImageFragment extends Fragment {
     int fragVal;
 
-    public static ImageFragment init(int val) {
-        ImageFragment truitonFrag = new ImageFragment();
+    public static TEST_ImageFragment init(int val) {
+        TEST_ImageFragment truitonFrag = new TEST_ImageFragment();
         // Supply val input as an argument.
         Bundle args = new Bundle();
         args.putInt("val", val);

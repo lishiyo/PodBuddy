@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +18,9 @@ import com.cziyeli.podbuddy.services.ListenLatestService;
  * Created by connieli on 6/4/15.
  */
 public class PodcastFavsAdapter extends CursorAdapter {
-    public Context mContext;
 
     public PodcastFavsAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
-        mContext = context;
     }
 
     @Override
@@ -36,9 +33,9 @@ public class PodcastFavsAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.mPodcastName = (TextView) view.findViewById(R.id.podcastName);
-            holder.mProducerName = (TextView) view.findViewById(R.id.producerName);
-            holder.mListenBtn = (Button) view.findViewById(R.id.listenBtn);
+            holder.mPodcastName = (TextView) view.findViewById(R.id.podcast_name);
+            holder.mProducerName = (TextView) view.findViewById(R.id.producer_name);
+            holder.mListenBtn = (Button) view.findViewById(R.id.listen_btn);
             holder.mListenBtn.setOnClickListener(mListenListener);
             view.setTag(holder);
         }
@@ -55,7 +52,7 @@ public class PodcastFavsAdapter extends CursorAdapter {
     }
 
 
-    /** LISTEN LOGIC **/
+    /** CLICK EVENTS **/
 
     public View.OnClickListener mListenListener = new View.OnClickListener() {
         @Override
@@ -66,16 +63,10 @@ public class PodcastFavsAdapter extends CursorAdapter {
     };
 
     public void startListenService(Long podcast_id, View v) {
-//        PodcastFavsAdapter.ListenLatestReceiver listenReceiver = new PodcastFavsAdapter.ListenLatestReceiver();
-//        IntentFilter intentFilter = new IntentFilter(ListenLatestService.ACTION_RESPONSE);
-//        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-//        mContext.registerReceiver(listenReceiver, intentFilter);
-
-        Intent intent = new Intent(mContext, ListenLatestService.class);
+        Context ctx = v.getContext();
+        Intent intent = new Intent(ctx, ListenLatestService.class);
         intent.putExtra(Config.LISTEN_IN, podcast_id);
-        mContext.startService(intent);
-
-        Log.d(Config.DEBUG_TAG, "starting listen service IN BUTTON " + String.valueOf(podcast_id));
+        ctx.startService(intent);
     }
 
     public static class ViewHolder {

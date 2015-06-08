@@ -99,12 +99,12 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
     public ListView.OnItemClickListener mSearchListener = new ListView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            Cursor cursor = (Cursor) mAdapter.getItem(position);
+//            Cursor cursor = (Cursor) mAdapter.getItem(mStartPos);
 //            long _id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"));
 //            Podcast podcast = Podcast.load(Podcast.class, _id);
 //            PodcastFav.createOrDestroyFav(podcast);
 
-            Log.d(Config.DEBUG_TAG, "++ Favlistener clicked position ");
+            Log.d(Config.DEBUG_TAG, "++ Favlistener clicked mStartPos ");
         }
     };
 
@@ -159,15 +159,9 @@ public class PodcastSearchFrag extends Fragment implements LoaderManager.LoaderC
     public class SearchPodcastsReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int count = Podcast.count();
-
             if (!intent.getBooleanExtra(Config.SEARCH_OUT, false)) {
-                Log.d(Config.DEBUG_TAG, "failed to get data! count: " + String.valueOf(count));
                 Toast.makeText(getActivity(), "no podcasts were found", Toast.LENGTH_LONG).show();
-            } else {
-                Log.d(Config.DEBUG_TAG, "got data! count: " + String.valueOf(count));
             }
-
         }
     }
 }

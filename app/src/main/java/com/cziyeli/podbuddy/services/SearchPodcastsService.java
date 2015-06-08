@@ -4,7 +4,6 @@ package com.cziyeli.podbuddy.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
 import com.bdenney.itunessearch.ITunesSearchClient;
@@ -44,6 +43,7 @@ public class SearchPodcastsService extends IntentService {
 
     protected void savePodcasts(List<PodcastInfo> podcastInfoList) {
         PodcastInfo podcastInfo;
+        // Retrieve list of current PodcastFav ids
         ArrayList<Long> currentFavs = PodcastFav.currentIds();
 
         ActiveAndroid.beginTransaction();
@@ -59,8 +59,6 @@ public class SearchPodcastsService extends IntentService {
                 podcast.artwork_url = podcastInfo.getArtworkUrl();
                 podcast.feed_url = podcastInfo.getFeedUrl();
                 podcast.podcast_id = podcastInfo.getPodcastId();
-
-                Log.d(Config.DEBUG_TAG, "savePodcasts: " + podcastInfo.toString() + " favorited: " + String.valueOf(podcast.favorited));
 
                 podcast.save();
             }
@@ -79,6 +77,7 @@ public class SearchPodcastsService extends IntentService {
         intentResponse.setAction(ACTION_RESPONSE);
         intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
         intentResponse.putExtra(Config.SEARCH_OUT, success);
+
         sendBroadcast(intentResponse);
     }
 }

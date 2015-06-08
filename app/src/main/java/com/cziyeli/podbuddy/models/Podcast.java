@@ -43,35 +43,6 @@ public class Podcast extends Model {
         super();
     }
 
-    // Return existing PodcastFav as new Podcast or create
-    public static Podcast findOrCreateFromInfo(long p_id) {
-//        PodcastFav existingFav = new Select()
-//                                .from(PodcastFav.class)
-//                                .where("podcast_id = ?", podcastInfo.getPodcastId())
-//                                .executeSingle();
-
-
-        Podcast podcast = new Podcast();
-
-        if (Podcast.hasBeenFavorited(p_id)) {
-//            podcast.producer_name = existingFav.producer_name;
-//            podcast.podcast_name = existingFav.podcast_name;
-//            podcast.artwork_url = existingFav.artwork_url;
-//            podcast.feed_url = existingFav.feed_url;
-//            podcast.podcast_id = existingFav.podcast_id;
-            podcast.favorited = 1;
-        } else {
-//            podcast.producer_name = podcastInfo.getProducerName();
-//            podcast.podcast_name = podcastInfo.getPodcastName();
-//            podcast.artwork_url = podcastInfo.getArtworkUrl();
-//            podcast.feed_url = podcastInfo.getFeedUrl();
-//            podcast.podcast_id = podcastInfo.getPodcastId();
-            podcast.favorited = 0;
-        }
-
-        return podcast;
-    }
-
     public static List<Podcast> getAll() {
         return new Select().from(Podcast.class).execute();
     }
@@ -89,6 +60,30 @@ public class Podcast extends Model {
     }
 
     /** METHODS **/
+
+    // Create the Fav if new, or delete from Favs to unfavorite
+    public void createOrDestroyFav() {
+        PodcastFav fav = PodcastFav.findFavByPodcastId(this.podcast_id);
+
+        if (fav == null) { // not favorited yet, create
+            fav = new PodcastFav();
+            fav.producer_name = this.producer_name;
+            fav.podcast_name = this.podcast_name;
+            fav.artwork_url = this.artwork_url;
+            fav.feed_url = this.feed_url;
+            fav.podcast_id = this.podcast_id;
+            fav.save();
+        } else { // already favorited - unfavorite
+            fav.delete();
+        }
+
+        this.toggleFav();
+    }
+
+    public void toggleFav() {
+        this.favorited = (this.favorited == 0) ? 1 : 0;
+        this.save();
+    }
 
     // Returns whether podcast_id exists in podcast_favs
     public static boolean hasBeenFavorited(long p_id) {

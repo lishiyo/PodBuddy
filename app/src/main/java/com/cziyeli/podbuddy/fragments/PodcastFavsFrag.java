@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import android.widget.ListView;
 import com.activeandroid.content.ContentProvider;
 import com.bdenney.itunessearch.PodcastEpisode;
 import com.cziyeli.podbuddy.Config;
+import com.cziyeli.podbuddy.PodcastFavDetailActivity;
 import com.cziyeli.podbuddy.R;
 import com.cziyeli.podbuddy.adapters.PodcastFavsAdapter;
 import com.cziyeli.podbuddy.models.PodcastFav;
@@ -36,13 +36,10 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
     public static final int LOADER_ID = 0;
     private PodcastFavsAdapter mAdapter;
     private ListView mListView;
-
     public ListenLatestReceiver mListenReceiver;
 
-
     public static PodcastFavsFrag newInstance() {
-        PodcastFavsFrag f = new PodcastFavsFrag();
-        return f;
+        return new PodcastFavsFrag();
     }
 
     // STEP 2
@@ -66,6 +63,7 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
     }
 
     // STEP 4
+    @Override
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
 
@@ -83,29 +81,28 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
         IntentFilter intentFilter = new IntentFilter(ListenLatestService.ACTION_RESPONSE);
         intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
         getActivity().registerReceiver(mListenReceiver, intentFilter);
-        Log.e(Config.DEBUG_TAG, " +++ onResume +++");
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        Log.e(Config.DEBUG_TAG, " +++ onPause +++");
         if (mListenReceiver != null) {
             getActivity().unregisterReceiver(mListenReceiver);
         }
     }
 
-
     /** Click Fav Podcast row => detail view for ratings **/
     public ListView.OnItemClickListener mListenListener = new ListView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            Cursor cursor = (Cursor) mAdapter.getItem(position);
+//            Cursor cursor = (Cursor) mAdapter.getItem(mStartPos);
 //            long podcast_id = cursor.getLong(cursor.getColumnIndexOrThrow("podcast_id"));
 //            startListenService(podcast_id);
-            Log.d(Config.DEBUG_TAG, "++ clicked position in list, not starting listen service! ");
-
-            /** go to PodcastFav detail view **/
+            /** send mStartPos to PodcastFav detail view **/
+            Activity act = getActivity();
+            Intent detailIntent = new Intent(act, PodcastFavDetailActivity.class );
+            detailIntent.putExtra(Config.DETAIL_IN, position);
+            act.startActivity(detailIntent);
         }
     };
 
@@ -115,14 +112,13 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri contentProviderUri = ContentProvider.createUri(PodcastFav.class, null);
         Loader<Cursor> loader = new CursorLoader(getActivity(),
-                contentProviderUri, null, null, null, null);
+                contentProviderUri, null, null, null, "time_last_listen DESC");
 
         return loader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(Config.DEBUG_TAG, "+++ onLoadFinished() called! +++");
         mAdapter.swapCursor(data);
 
         // TODO: start IntentService to get PodcastFavs.allLatestEpisodeUrls()
@@ -130,7 +126,6 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(Config.DEBUG_TAG, "+++ onLoaderReset() called! +++");
         mAdapter.swapCursor(null);
     }
 
@@ -142,81 +137,19 @@ public class PodcastFavsFrag extends Fragment implements LoaderManager.LoaderCal
         @Override
         public void onReceive(Context context, Intent intent) {
             Activity act = getActivity();
-
             Bundle extras = intent.getExtras();
             String jsonMyObject = extras.getString(Config.LISTEN_OUT);
             PodcastEpisode episode = new Gson().fromJson(jsonMyObject, PodcastEpisode.class);
 
             Intent playIntent = new Intent( act, MediaPlayerService.class );
-//            playIntent.setAction(MediaPlayerService.ACTION_PLAY);
             playIntent.setAction(MediaPlayerService.ACTION_START_NEW);
 
-            // TODO: Instead of passing url, pass String[] mMediaUrls and position
+            // TODO: Instead of passing url, pass String[] mMediaUrls and mStartPos
             playIntent.putExtra(Config.MEDIA_URL, episode.getMediaUrl());
-
 
             act.startService(playIntent);
         }
 
-
-
-        /** OLD **/
-//        public void createPodcastPlayer(Context context, Intent intent) {
-//            String jsonMyObject;
-//            Bundle extras = intent.getExtras();
-//
-//            jsonMyObject = extras.getString(Config.LISTEN_OUT);
-//            PodcastEpisode episode = new Gson().fromJson(jsonMyObject, PodcastEpisode.class);
-//            Log.d(Config.DEBUG_TAG, "listenlatestreceiver on receive! " + episode.getMediaUrl());
-//            // need to check create or pause here
-//
-//            if (extras != null) {
-//                // If mediaPlayer already playing, stop on click
-//                if (mEpisodeIsPlaying) {
-//                    Log.e(Config.DEBUG_TAG, "mEpisodeIsPlaying");
-//                    mPodcastPlayer.reset();
-//                    mEpisodeIsPlaying = false;
-//                    return;
-//                }
-//
-//                Log.e(Config.DEBUG_TAG, "episode is not playing!");
-//
-//                // create or prepare if already
-//                if (mPodcastPlayer == null) {
-//                    mPodcastPlayer = new MediaPlayer();
-//                }
-////                    mPodcastPlayer = MediaPlayer.create(context, uri);
-//
-//                try {
-//                    mPodcastPlayer.reset();
-//                    mPodcastPlayer.setDataSource(episode.getMediaUrl());
-//                    mPodcastPlayer.prepareAsync();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                mPodcastPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                    @Override
-//                    public void onPrepared(MediaPlayer mp) {
-//                        if (mp == mPodcastPlayer) {
-//                            mPodcastPlayer.start();
-//                            mEpisodeIsPlaying = true;
-//                        }
-//                    }
-//                });
-//
-//                mPodcastPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                    @Override
-//                    public void onCompletion(MediaPlayer mp) {
-//                        mp.stop();
-//                        mp.release();
-//                        mEpisodeIsPlaying = false;
-//                    }
-//                });
-//
-//            }
-
-//        }
     }
 
 }

@@ -10,16 +10,16 @@ import android.widget.TextView;
 import com.cziyeli.podbuddy.R;
 
 /**
- * Same layout as ImageFragment
+ * Same layout as TEST_ImageFragment
  */
-public class FirstFragment extends Fragment {
+public class TEST_FirstFragment extends Fragment {
     // Store instance variables
     private String title;
     private int page;
 
     // newInstance constructor for creating fragment with arguments
-    public static FirstFragment newInstance(int page, String title) {
-        FirstFragment fragmentFirst = new FirstFragment();
+    public static TEST_FirstFragment newInstance(int page, String title) {
+        TEST_FirstFragment fragmentFirst = new TEST_FirstFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);

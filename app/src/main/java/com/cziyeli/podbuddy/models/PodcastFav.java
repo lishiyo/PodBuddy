@@ -2,7 +2,6 @@ package com.cziyeli.podbuddy.models;
 
 
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -12,17 +11,12 @@ import com.activeandroid.query.Select;
 import com.bdenney.itunessearch.ITunesSearchClient;
 import com.bdenney.itunessearch.PodcastEpisode;
 import com.bdenney.itunessearch.PodcastInfo;
-import com.cziyeli.podbuddy.Config;
 
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Podcasts that have been favorited stored here
- *
  */
 
 // Override id to use ActiveAndroid data as content provider
@@ -53,48 +47,33 @@ public class PodcastFav extends Model {
     @Column(name = "rating")
     public int rating;
 
-    @Column(name = "time_last_listen", index = true)
-    public Date time_last_listen; // stored as a timestamp
+    @Column(name = "time_last_listen")
+    public long time_last_listen;
 
     @Column(name = "num_listens")
     public int num_listens;
 
     public PodcastFav() {
         super();
-        this.favorited = 1;
+        time_last_listen = System.currentTimeMillis();
+        num_listens = 0;
+        favorited = 1;
+        rated = 0;
     }
 
     /** QUERIES **/
 
     public static List<PodcastFav> getAll() {
-        return new Select().from(PodcastFav.class).execute();
+        return new Select()
+                .from(PodcastFav.class)
+                .execute();
     }
 
-    public static void createOrDestroyFav(Podcast podcast) {
-        Log.e(Config.DEBUG_TAG, "podcast id: " + String.valueOf(podcast.podcast_id));
-        PodcastFav fav = PodcastFav.findFavByPodcastId(podcast.podcast_id);
-
-        if (fav == null) { // not favorited yet, create
-            fav = new PodcastFav();
-            fav.producer_name = podcast.producer_name;
-            fav.podcast_name = podcast.podcast_name;
-            fav.artwork_url = podcast.artwork_url;
-            fav.feed_url = podcast.feed_url;
-            fav.podcast_id = podcast.podcast_id;
-            fav.save();
-
-            podcast.favorited = 1;
-            podcast.save();
-            Log.d(Config.DEBUG_TAG, "creating fav! name: " + fav.podcast_name + " and id: " + fav.podcast_id);
-
-        } else { // already favorited - unfavorite
-            fav.delete();
-
-            podcast.favorited = 0;
-            podcast.save();
-            Log.d(Config.DEBUG_TAG, "deleting fav! name: " + podcast.podcast_name + " and id: " + podcast.podcast_id);
-
-        }
+    public static List<PodcastFav> getAllOrdered() {
+        return new Select()
+                .from(PodcastFav.class)
+                .orderBy("time_last_listen DESC")
+                .execute();
     }
 
     public static PodcastFav findFavByPodcastId(long p_id) {
@@ -108,6 +87,9 @@ public class PodcastFav extends Model {
     public static void clearAll() {
         new Delete().from(PodcastFav.class).execute();
     }
+
+    /** METHODS **/
+
 
     // Returns all current podcast_ids in PodcastFav table
     public static ArrayList<Long> currentIds() {
@@ -142,10 +124,14 @@ public class PodcastFav extends Model {
     /** UTILS **/
 
     // parse strings into date object for time_last_listen
-    public void setDateFromString(String date) throws ParseException {
-        SimpleDateFormat sf = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy");
-        sf.setLenient(true);
-        this.time_last_listen = (Date) sf.parse(date);
-    }
+//    public void setDateFromString(String date) throws ParseException {
+//        SimpleDateFormat sf = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy");
+//        sf.setLenient(true);
+//        this.time_last_listen = (Date) sf.parse(date);
+//    }
 
+    public void updateLastListen() {
+        this.time_last_listen = System.currentTimeMillis();
+        this.save();
+    }
 }

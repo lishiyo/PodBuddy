@@ -17,6 +17,9 @@ public class Config {
     public static final String MEDIA_URL = "media_url";
     public static final String MEDIA_QUEUE = "media_queue";
 
+    public static final String DETAIL_IN = "podcast_position";
+    public static final int PLACEHOLDER_IMG = R.drawable.cheep_yellow;
+
 //    public interface ACTION {
 //        public static String MAIN_ACTION = PACKAGE_BASE + ".action.main";
 //        public static String PREV_ACTION = PACKAGE_BASE + ".action.prev";

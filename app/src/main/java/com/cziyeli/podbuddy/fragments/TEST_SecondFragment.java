@@ -16,7 +16,7 @@ import com.cziyeli.podbuddy.R;
 /**
  * Created by connieli on 6/2/15.
  */
-public class SecondFragment extends ListFragment {
+public class TEST_SecondFragment extends ListFragment {
     // Store instance variables
     private String title;
     private int page;
@@ -25,8 +25,8 @@ public class SecondFragment extends ListFragment {
             "FragmentPagerAdapter", "and ViewPager", "Implementation" };
 
     // newInstance constructor for creating fragment with arguments
-    public static FirstFragment newInstance(int page, String title) {
-        FirstFragment fragmentFirst = new FirstFragment();
+    public static TEST_FirstFragment newInstance(int page, String title) {
+        TEST_FirstFragment fragmentFirst = new TEST_FirstFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
