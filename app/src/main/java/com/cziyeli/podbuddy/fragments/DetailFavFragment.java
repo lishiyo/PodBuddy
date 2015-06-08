@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ public class DetailFavFragment extends Fragment {
     public ImageView mArtwork;
     public Button mListenBtn;
 
-    public static DetailFavFragment newInstance(int position, long podcast_id) {
+    public static DetailFavFragment newInstance(long podcast_id) {
         DetailFavFragment frag = new DetailFavFragment();
         Bundle args = new Bundle();
         args.putLong(PODCAST_FAV, podcast_id);
@@ -45,9 +46,6 @@ public class DetailFavFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        // TODO: WTF we need to send activity to AsyncTask or getActivity() returns null??
-        setPodcastData(activity);
     }
 
     @Override
@@ -65,6 +63,9 @@ public class DetailFavFragment extends Fragment {
         mListenBtn = (Button) view.findViewById(R.id.detail_listen_btn);
         mListenBtn.setOnClickListener(mListenListener);
 
+        // TODO: WTF we need to save activity in AsyncTask or is null in onPostExecute()??
+        setPodcastData();
+
         return view;
     }
 
@@ -73,9 +74,9 @@ public class DetailFavFragment extends Fragment {
         super.onActivityCreated(bundle);
     }
 
-    public void setPodcastData(Activity activity){
+    public void setPodcastData(){
         Bundle args = getArguments();
-        new AsyncFetchPodcast(activity).execute(args.getLong(PODCAST_FAV));
+        new AsyncFetchPodcast().execute(args.getLong(PODCAST_FAV));
     }
 
     /** ASYNC TASKS - Database queries **/
@@ -83,9 +84,10 @@ public class DetailFavFragment extends Fragment {
     public class AsyncFetchPodcast extends AsyncTask<Long, List<Model>, PodcastFav> {
         private Activity mActivity;
 
-        public AsyncFetchPodcast(Activity activity) {
+        public AsyncFetchPodcast() {
             super();
-            mActivity = activity;
+
+            mActivity = getActivity();
         }
 
         @Override
@@ -95,6 +97,8 @@ public class DetailFavFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PodcastFav fav) {
+            Log.d(Config.DEBUG_TAG, "++ onPostExecute!! ++ " + fav.podcast_name);
+
             mPodcast = fav;
             mTitleView.setText(mPodcast.podcast_name);
             mProducerView.setText(mPodcast.producer_name);

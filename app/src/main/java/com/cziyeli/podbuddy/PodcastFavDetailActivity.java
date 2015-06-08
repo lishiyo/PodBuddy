@@ -41,7 +41,6 @@ public class PodcastFavDetailActivity extends SearchableActivity {
 
         AsyncFetchAllPodcasts fetcher = new AsyncFetchAllPodcasts();
         fetcher.execute();
-
     }
 
     // only if activity launchMode="singleTop" or "singleTask"
@@ -142,8 +141,8 @@ public class PodcastFavDetailActivity extends SearchableActivity {
         public Fragment getItem(int position) {
             // Instantiate DetailFrag with PodcastFav model
             PodcastFav fav = mPodcastFavs.get(position);
-            Log.d(Config.DEBUG_TAG, "+++ getItem position: " + String.valueOf(position));
-            return DetailFavFragment.newInstance(position, fav.podcast_id);
+            Log.d(Config.DEBUG_TAG, "+++ mPagerAdapter getItem at: " + String.valueOf(position));
+            return DetailFavFragment.newInstance(fav.podcast_id);
         }
 
         // Returns the page title for the top indicator
