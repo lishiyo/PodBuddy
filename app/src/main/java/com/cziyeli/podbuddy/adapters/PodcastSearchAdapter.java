@@ -1,8 +1,9 @@
 package com.cziyeli.podbuddy.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,11 +57,10 @@ public class PodcastSearchAdapter extends CursorAdapter {
 
         // Switch button styles to toggle fav
         int btntext = isFavorited ? R.string.act_unfav : R.string.act_fav;
-        int btnColor = isFavorited ? Color.LTGRAY : view.getResources().getColor(R.color.genius);
-        int btnTextColor = isFavorited ? Color.WHITE : Color.BLACK;
+        Resources res = view.getResources();
+        Drawable btnBackground = isFavorited ? res.getDrawable(R.drawable.button_unfav) : res.getDrawable(R.drawable.button_fav);
         holder.mFavBtn.setText(btntext);
-        holder.mFavBtn.setBackgroundColor(btnColor);
-        holder.mFavBtn.setTextColor(btnTextColor);
+        holder.mFavBtn.setBackground(btnBackground);
     }
 
     public View.OnClickListener mToggleFavListener = new View.OnClickListener() {

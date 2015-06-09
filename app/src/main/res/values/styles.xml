@@ -11,6 +11,7 @@
         <!-- for the following two, use a different ripple without mask -->
         <item name="selectableItemBackgroundBorderless">@drawable/ripple_standard</item>
         <item name="android:selectableItemBackgroundBorderless">@drawable/ripple_standard</item>
+        <item name="android:colorControlHighlight">#E91E63</item>
     </style>
 
     <style name="Theme.MyCompatTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
