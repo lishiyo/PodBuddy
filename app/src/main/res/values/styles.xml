@@ -25,14 +25,13 @@
 
         <!-- Support library compatibility -->
         <item name="homeAsUpIndicator">@drawable/tv_bluegreen</item>
-
     </style>
 
     <style name="ActionBar"
         parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/background</item>
-        <item name="android:paddingLeft">10dp</item>
         <item name="background">@color/background</item>
+        <item name="android:paddingLeft">20dp</item>
     </style>
 
     <style name="ImageFullWidth">
